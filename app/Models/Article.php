@@ -64,6 +64,6 @@ class Article extends Model
     {
         $this->attributes['title'] = $title;
 
-        $this->attributes['slug'] = Str::slug($title, '_');
+        $this->attributes['slug'] = Str::slug($title, '-');
     }
 }
