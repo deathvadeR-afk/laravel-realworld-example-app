@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Article;
+use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
@@ -34,5 +35,30 @@ class ArticleTest extends TestCase
                     ]
                 ]
             ]);
+    }
+
+    public function testCreatesArticleWithDashSlug()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'api');
+
+        $user->articles()->create([
+            'title' => 'How to train your dragon',
+            'description' => 'A short description',
+            'body' => 'A short body',
+        ]);
+
+        $this->assertEquals('how-to-train-your-dragon', Article::firstOrFail()->slug);
+    }
+
+    public function testRegeneratesSlugWithDashesWhenTitleChanges()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user, 'api');
+        $article = Article::factory()->create(['user_id' => $user->id]);
+
+        $article->update(['title' => 'How to train your dragon']);
+
+        $this->assertEquals('how-to-train-your-dragon', $article->fresh()->slug);
     }
 }
